@@ -1,5 +1,7 @@
 use osrs_calc::{
-    character::Character, math::effective_strength, EquipmentPiece, Potion, PotionVariant, Prayer,
+    character::Character,
+    math::{calculate_max_hit, effective_level},
+    AttackStyle, EquipmentPiece, PotionVariant, Prayer,
 };
 
 fn main() {
@@ -44,11 +46,31 @@ fn main() {
         },
     };
 
-    let pot = PotionVariant::Overload;
+    let pot = PotionVariant::SmellingSalt;
     let pray = Prayer::Piety;
+
+    let attack_style = AttackStyle::Aggressive;
 
     println!(
         "{}",
-        effective_strength(character, osrs_calc::CombatStyle::Melee, pot, pray)
+        effective_level(
+            &character,
+            &osrs_calc::CombatStyle::Ranged,
+            &pot,
+            &pray,
+            &attack_style,
+            &osrs_calc::character::Skill::Ranged
+        )
     );
+
+    println!(
+        "{}",
+        calculate_max_hit(
+            &character,
+            &osrs_calc::CombatStyle::Melee,
+            &pot,
+            &pray,
+            &attack_style,
+        )
+    )
 }

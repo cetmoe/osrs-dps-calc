@@ -16,6 +16,24 @@ pub struct Equipment {
     pub shield: EquipmentPiece,
 }
 
+impl Equipment {
+    pub fn as_vec(&self) -> Vec<EquipmentPiece> {
+        vec![
+            self.ammo,
+            self.helmet,
+            self.neck,
+            self.cloak,
+            self.body,
+            self.hands,
+            self.ring,
+            self.legs,
+            self.feet,
+            self.weapon,
+            self.shield,
+        ]
+    }
+}
+
 #[derive(Copy, Clone)]
 pub struct EquipmentPiece {
     pub stab_attack: u32,
@@ -28,11 +46,21 @@ pub struct EquipmentPiece {
     pub crush_defence: u32,
     pub magic_defence: u32,
     pub ranged_defence: u32,
-    pub melee_strength: u32,
-    pub ranged_strength: u32,
-    pub magic_strength: u32,
+    pub melee_strength: u8,
+    pub ranged_strength: u8,
+    pub magic_strength: u8,
     pub prayer: u32,
     pub weight: f32,
+}
+
+impl EquipmentPiece {
+    pub fn get_strength(self, combat_style: &CombatStyle) -> u8 {
+        match combat_style {
+            Melee => self.melee_strength,
+            Ranged => self.ranged_strength,
+            Magic => self.magic_strength,
+        }
+    }
 }
 
 pub enum AttackStyle {
@@ -43,6 +71,18 @@ pub enum AttackStyle {
     Rapid,
     Longrange,
     Autocast,
+}
+
+impl AttackStyle {
+    pub fn bonus(&self, skill: &Skill) -> u8 {
+        match (self, skill) {
+            (Self::Aggressive, Skill::Strength) => 3,
+            (Self::Controlled, Skill::Strength) => 1,
+            (Self::Aggressive, Skill::Attack) => 1,
+            (Self::Controlled, Skill::Attack) => 3,
+            (_, _) => 0,
+        }
+    }
 }
 
 pub enum CombatStyle {
@@ -57,6 +97,7 @@ pub enum PrayerStrength {
     Strong(f32, f32, f32),
 }
 
+use character::Skill;
 use PrayerStrength::*;
 
 pub enum Prayer {
@@ -70,7 +111,7 @@ pub enum Prayer {
 }
 
 impl Prayer {
-    pub fn get_boost(self, combat_style: &CombatStyle) -> PrayerStrength {
+    pub fn get_boost(&self, combat_style: &CombatStyle) -> PrayerStrength {
         match (self, combat_style) {
             (Self::EagleEye, Ranged) => Weak(1.15),
             (Self::MysticMight, Magic) => Weak(1.15),
@@ -106,7 +147,7 @@ pub enum PotionVariant {
 }
 
 impl PotionVariant {
-    pub fn get_boost(self, style: &CombatStyle) -> Potion {
+    pub fn get_boost(&self, style: &CombatStyle) -> Potion {
         match (self, style) {
             (Self::Nothing, _) => Potion::new(0, 1.0),
             (Self::Normal, Magic) => Potion::new(4, 1.0),

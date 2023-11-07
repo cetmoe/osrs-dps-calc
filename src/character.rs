@@ -11,3 +11,25 @@ pub struct Character {
     pub hitpoints: u8,
     pub equipment: Equipment,
 }
+
+impl Character {
+    pub fn get_skill(&self, skill: &Skill) -> u8 {
+        match skill {
+            Skill::Attack => self.attack,
+            Skill::Strength => self.strength,
+            Skill::Defence => self.defence,
+            Skill::Prayer => self.prayer,
+            Skill::Ranged => self.ranged,
+            Skill::Magic => self.magic,
+        }
+    }
+}
+
+pub enum Skill {
+    Attack,
+    Strength,
+    Defence,
+    Prayer,
+    Ranged,
+    Magic,
+}
