@@ -44,7 +44,7 @@ pub fn effective_level(
 
     match combat_style {
         CombatStyle::Melee => {
-            let prayer_boosted = match (prayer.get_boost(combat_style), skill) {
+            let prayer_boosted = match (prayer.get_prayer(combat_style), skill) {
                 (Weak(multi), _) => (level_and_pot_boosted as f32 * multi) as u8,
                 (Strong(_, multi, _), Skill::Strength) => {
                     (level_and_pot_boosted as f32 * multi) as u8

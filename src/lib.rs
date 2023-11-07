@@ -85,6 +85,12 @@ impl AttackStyle {
     }
 }
 
+pub enum SkillType {
+    Attack,
+    Strength,
+    Defence,
+}
+
 pub enum CombatStyle {
     Melee,
     Magic,
@@ -95,6 +101,19 @@ use CombatStyle::*;
 pub enum PrayerStrength {
     Weak(f32),
     Strong(f32, f32, f32),
+}
+
+impl PrayerStrength {
+    pub fn get_multiplier(self, skill_type: SkillType) -> f32 {
+        match self {
+            Self::Weak(multi) => multi,
+            Self::Strong(atk, str, def) => match skill_type {
+                SkillType::Attack => atk,
+                SkillType::Strength => str,
+                SkillType::Defence => def,
+            },
+        }
+    }
 }
 
 use character::Skill;
@@ -111,7 +130,7 @@ pub enum Prayer {
 }
 
 impl Prayer {
-    pub fn get_boost(&self, combat_style: &CombatStyle) -> PrayerStrength {
+    pub fn get_prayer(&self, combat_style: &CombatStyle) -> PrayerStrength {
         match (self, combat_style) {
             (Self::EagleEye, Ranged) => Weak(1.15),
             (Self::MysticMight, Magic) => Weak(1.15),
@@ -137,7 +156,6 @@ impl Potion {
 }
 
 pub enum PotionVariant {
-    Nothing,
     Normal,
     Super,
     Overload,
@@ -149,7 +167,6 @@ pub enum PotionVariant {
 impl PotionVariant {
     pub fn get_boost(&self, style: &CombatStyle) -> Potion {
         match (self, style) {
-            (Self::Nothing, _) => Potion::new(0, 1.0),
             (Self::Normal, Magic) => Potion::new(4, 1.0),
             (Self::Normal, Ranged) => Potion::new(4, 1.1),
             (Self::Normal, Melee) => Potion::new(3, 1.1),
