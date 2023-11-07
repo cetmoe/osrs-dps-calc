@@ -1,6 +1,7 @@
 pub mod character;
 pub mod math;
 
+#[derive(Copy, Clone)]
 pub struct Equipment {
     pub ammo: EquipmentPiece,
     pub helmet: EquipmentPiece,
@@ -15,6 +16,7 @@ pub struct Equipment {
     pub shield: EquipmentPiece,
 }
 
+#[derive(Copy, Clone)]
 pub struct EquipmentPiece {
     pub stab_attack: u32,
     pub slash_attack: u32,
@@ -77,7 +79,7 @@ impl Prayer {
             (Self::Piety, Melee) => Strong(1.2, 1.23, 1.25),
             (Self::Rigour, Ranged) => Strong(1.2, 1.23, 1.25),
             (Self::Augury, Magic) => Strong(1.25, 1.0, 1.25),
-            (_, _) => Weak(0.0),
+            (_, _) => Weak(1.0),
         }
     }
 }

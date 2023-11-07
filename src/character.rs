@@ -1,5 +1,6 @@
 use crate::Equipment;
 
+#[derive(Copy, Clone)]
 pub struct Character {
     pub attack: u8,
     pub strength: u8,
