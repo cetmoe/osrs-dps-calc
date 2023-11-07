@@ -31,7 +31,16 @@ pub struct EquipmentPiece {
     pub magic_strength: u32,
     pub prayer: u32,
     pub weight: f32,
-    pub bonus
+}
+
+pub enum AttackStyle {
+    Accurate,
+    Aggressive,
+    Defensive,
+    Controlled,
+    Rapid,
+    Longrange,
+    Autocast,
 }
 
 pub enum CombatStyle {
@@ -39,21 +48,74 @@ pub enum CombatStyle {
     Magic,
     Ranged,
 }
+use CombatStyle::*;
 
-pub enum Skill {
-    Attack(u64),
-    Strength(u64),
-    Defence(u64),
-    Prayer(u64),
-    Ranged(u64),
-    Magic(u64),
-    Hitpoints(u64),
+pub enum PrayerStrength {
+    Weak(f32),
+    Strong(f32, f32, f32),
 }
 
-pub enum Boost {
+use PrayerStrength::*;
+
+pub enum Prayer {
+    EagleEye,
+    MysticMight,
+    UltimateStrength,
+    Chivalry,
+    Piety,
+    Rigour,
+    Augury,
+}
+
+impl Prayer {
+    pub fn get_boost(self, combat_style: &CombatStyle) -> PrayerStrength {
+        match (self, combat_style) {
+            (Self::EagleEye, Ranged) => Weak(1.15),
+            (Self::MysticMight, Magic) => Weak(1.15),
+            (Self::UltimateStrength, Melee) => Weak(1.15),
+            (Self::Chivalry, Melee) => Strong(1.15, 1.18, 1.2),
+            (Self::Piety, Melee) => Strong(1.2, 1.23, 1.25),
+            (Self::Rigour, Ranged) => Strong(1.2, 1.23, 1.25),
+            (Self::Augury, Magic) => Strong(1.25, 1.0, 1.25),
+            (_, _) => Weak(0.0),
+        }
+    }
+}
+
+pub struct Potion {
+    level: u8,
+    multiplier: f32,
+}
+
+impl Potion {
+    pub fn new(level: u8, multiplier: f32) -> Self {
+        Self { level, multiplier }
+    }
+}
+
+pub enum PotionVariant {
     Nothing,
     Normal,
     Super,
     Overload,
     SmellingSalt,
+    ImbuedHeart,
+    SaturatedHeart,
+}
+
+impl PotionVariant {
+    pub fn get_boost(self, style: &CombatStyle) -> Potion {
+        match (self, style) {
+            (Self::Nothing, _) => Potion::new(0, 1.0),
+            (Self::Normal, Magic) => Potion::new(4, 1.0),
+            (Self::Normal, Ranged) => Potion::new(4, 1.1),
+            (Self::Normal, Melee) => Potion::new(3, 1.1),
+            (Self::Super, Melee) => Potion::new(5, 1.15),
+            (Self::Overload, _) => Potion::new(6, 1.16),
+            (Self::SmellingSalt, _) => Potion::new(11, 1.16),
+            (Self::ImbuedHeart, Magic) => Potion::new(1, 1.1),
+            (Self::SaturatedHeart, Magic) => Potion::new(4, 1.1),
+            (_, _) => Potion::new(0, 1.0),
+        }
+    }
 }
